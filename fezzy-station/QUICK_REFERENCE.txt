@@ -1,0 +1,135 @@
+# FEZZY STATION — Quick Command Reference
+# Strategy Over Impulse · Bojack Fezzy 999
+
+═══════════════════════════════════════════════════════════════════
+QUICK SETUP (COPY-PASTE READY)
+═══════════════════════════════════════════════════════════════════
+
+# 1. Create project folder
+cd ~ && mkdir fezzy-station && cd fezzy-station
+
+# 2. Copy files from Downloads
+cp /sdcard/Download/app.py .
+cp /sdcard/Download/requirements.txt .
+cp /sdcard/Download/Procfile .
+cp /sdcard/Download/.gitignore .
+cp /sdcard/Download/runtime.txt .
+cp /sdcard/Download/README.md .
+cp ~/path/to/THE_MAIN_ONE.html .
+
+# 3. Initialize git
+git init
+git add .
+git commit -m "Initial commit - FEZZY STATION by Grant Fezzy Festers"
+
+# 4. Connect to GitHub (replace YOUR_USERNAME)
+git remote add origin https://github.com/YOUR_USERNAME/fezzy-station.git
+git branch -M main
+git push -u origin main
+
+═══════════════════════════════════════════════════════════════════
+LOCAL TESTING (BEFORE DEPLOYMENT)
+═══════════════════════════════════════════════════════════════════
+
+# Install dependencies
+pip install -r requirements.txt --break-system-packages
+
+# Run locally
+python app.py
+
+# Test in browser:
+# http://127.0.0.1:5000
+
+═══════════════════════════════════════════════════════════════════
+COMMON GIT COMMANDS
+═══════════════════════════════════════════════════════════════════
+
+# Check status
+git status
+
+# Add all changes
+git add .
+
+# Commit changes
+git commit -m "Your message here"
+
+# Push to GitHub
+git push
+
+# Pull latest changes
+git pull
+
+# View commit history
+git log --oneline
+
+# Undo last commit (keep changes)
+git reset --soft HEAD~1
+
+# View remote URL
+git remote -v
+
+═══════════════════════════════════════════════════════════════════
+RENDER DEPLOYMENT
+═══════════════════════════════════════════════════════════════════
+
+1. Push to GitHub (see above)
+2. Go to render.com → New Web Service
+3. Connect GitHub repo: fezzy-station
+4. Render auto-configures from Procfile
+5. Deploy!
+
+Your URL: https://fezzy-station.onrender.com
+
+═══════════════════════════════════════════════════════════════════
+UPDATING YOUR DEPLOYED APP
+═══════════════════════════════════════════════════════════════════
+
+# After making changes:
+cd ~/fezzy-station
+git add .
+git commit -m "Description of changes"
+git push
+
+# Render auto-deploys within 30 seconds
+
+═══════════════════════════════════════════════════════════════════
+USEFUL RENDER LINKS
+═══════════════════════════════════════════════════════════════════
+
+Dashboard:  dashboard.render.com
+Docs:       docs.render.com
+Status:     status.render.com
+
+═══════════════════════════════════════════════════════════════════
+FILE STRUCTURE
+═══════════════════════════════════════════════════════════════════
+
+fezzy-station/
+├── app.py                 ← Flask application
+├── THE_MAIN_ONE.html      ← Your main page
+├── requirements.txt       ← Python dependencies
+├── Procfile              ← Tells Render how to run app
+├── runtime.txt           ← Specifies Python version
+├── .gitignore            ← Files to ignore in git
+└── README.md             ← Project documentation
+
+═══════════════════════════════════════════════════════════════════
+TROUBLESHOOTING ONE-LINERS
+═══════════════════════════════════════════════════════════════════
+
+# Forgot to add THE_MAIN_ONE.html?
+git add THE_MAIN_ONE.html && git commit -m "Add HTML" && git push
+
+# Need to check what's in your repo?
+git ls-files
+
+# Want to see what changed?
+git diff
+
+# Accidentally committed something?
+git rm --cached filename && git commit -m "Remove file" && git push
+
+═══════════════════════════════════════════════════════════════════
+Grant Fezzy Festers · Bojack Fezzy 999 · Strategy Over Impulse
+Ravensmead · Cape Town · South Africa · 2026
+═══════════════════════════════════════════════════════════════════

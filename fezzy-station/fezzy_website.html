@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEZZY STATION — Command Centre</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap');
+
+:root{
+  --pk:#ff2d8a;--pu:#9b30ff;--cy:#00e5ff;
+  --gn:#4ade80;--ye:#fbbf24;--re:#ff3333;--or:#ff8c00;
+  --bg:#040408;--s1:#07070f;--s2:#0a0a18;--s3:#0d0d1f;
+  --bd:#131326;--bd2:#1c1c38;
+  --tx:#dde0ff;--dm:#3a3a60;--dm2:#5a5a88;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--pk);border-radius:2px;}
+body{background:var(--bg);color:var(--tx);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;}
+
+/* ── GLOBAL GLOW BACKGROUND ── */
+.bg-mesh{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 90% 60% at 10% 5%,rgba(155,48,255,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 90%,rgba(255,45,138,.06) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 80% at 50% 50%,rgba(0,229,255,.02) 0%,transparent 60%);
+}
+.bg-grid{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.scanline{
+  position:fixed;top:-10%;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--pk),transparent);
+  opacity:.08;z-index:1;pointer-events:none;
+  animation:scan 8s linear infinite;
+}
+@keyframes scan{0%{top:-3%}100%{top:103%}}
+
+/* ── ANIMATIONS ── */
+@keyframes neonPulse{0%,100%{text-shadow:0 0 10px var(--pk),0 0 30px var(--pk),0 0 60px rgba(255,45,138,.4);}50%{text-shadow:0 0 5px var(--pk),0 0 14px var(--pk);}}
+@keyframes flicker{0%,93%,100%{opacity:1;}94%{opacity:.4;}95%{opacity:1;}97%{opacity:.7;}98%{opacity:1;}}
+@keyframes glitch{0%{clip-path:inset(0 0 98% 0);transform:translate(-4px)}20%{clip-path:inset(60% 0 20% 0);transform:translate(3px)}50%{clip-path:inset(20% 0 70% 0);transform:translate(-2px)}100%{clip-path:inset(0 0 0 0);transform:translate(0)}}
+@keyframes glitch2{0%{clip-path:inset(40% 0 40% 0);transform:translate(3px);color:var(--pu)}50%{clip-path:inset(70% 0 10% 0);transform:translate(-3px);color:var(--cy)}100%{clip-path:inset(0 0 0 0);transform:translate(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes borderPulse{0%,100%{border-color:var(--pk);box-shadow:0 0 10px rgba(255,45,138,.25)}50%{border-color:var(--pu);box-shadow:0 0 10px rgba(155,48,255,.25)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:56px;
+  background:rgba(4,4,8,.88);
+  border-bottom:1px solid var(--bd2);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.topbar-logo{
+  font-family:'Orbitron',monospace;font-size:15px;font-weight:900;
+  color:var(--pk);letter-spacing:4px;
+  animation:neonPulse 3s ease-in-out infinite,flicker 9s infinite;
+}
+.topbar-logo span{color:var(--cy);}
+.topbar-nav{display:flex;gap:2px;}
+.topbar-nav a{
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1.5px;
+  color:var(--dm2);padding:6px 14px;border-radius:3px;text-decoration:none;
+  transition:all .2s;text-transform:uppercase;
+}
+.topbar-nav a:hover{color:var(--pk);background:rgba(255,45,138,.08);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.status-pill{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gn);
+  padding:5px 12px;border:1px solid rgba(74,222,128,.25);border-radius:20px;
+  background:rgba(74,222,128,.06);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--gn);box-shadow:0 0 6px var(--gn);animation:blink 2.5s ease-in-out infinite;}
+
+/* ── HERO ── */
+.hero{
+  position:relative;z-index:10;
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:80px 24px 60px;text-align:center;
+}
+.hero-tag{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;
+  color:var(--pk);text-transform:uppercase;margin-bottom:20px;
+  opacity:0;animation:fadeUp .6s .2s ease forwards;
+}
+.hero-title{
+  font-family:'Orbitron',monospace;font-weight:900;
+  font-size:clamp(52px,12vw,110px);line-height:.9;letter-spacing:-2px;
+  color:var(--pk);position:relative;
+  animation:neonPulse 3s ease-in-out infinite,flicker 8s infinite;
+  opacity:0;animation:fadeUp .7s .3s ease forwards,neonPulse 3s 1s ease-in-out infinite,flicker 8s 1s infinite;
+}
+.hero-title::before,.hero-title::after{
+  content:'FEZZY STATION';position:absolute;top:0;left:0;right:0;
+}
+.hero-title::before{animation:glitch 5s infinite .1s;color:var(--cy);opacity:.45;}
+.hero-title::after{animation:glitch2 5s infinite .2s;color:var(--pu);opacity:.4;}
+.hero-sub{
+  font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;
+  color:var(--dm2);margin-top:16px;
+  opacity:0;animation:fadeUp .7s .5s ease forwards;
+}
+.hero-sub span{color:var(--tx);}
+.hero-desc{
+  max-width:640px;font-size:18px;font-weight:400;line-height:1.6;
+  color:var(--dm2);margin-top:28px;
+  opacity:0;animation:fadeUp .7s .7s ease forwards;
+}
+.hero-desc strong{color:var(--tx);font-weight:600;}
+.hero-badges{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  margin-top:32px;
+  opacity:0;animation:fadeUp .7s .9s ease forwards;
+}
+.badge{
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1.5px;
+  padding:6px 14px;border-radius:4px;text-transform:uppercase;
+}
+.badge-gn{background:rgba(74,222,128,.08);color:var(--gn);border:1px solid rgba(74,222,128,.3);}
+.badge-ye{background:rgba(251,191,36,.08);color:var(--ye);border:1px solid rgba(251,191,36,.3);}
+.badge-pk{background:rgba(255,45,138,.08);color:var(--pk);border:1px solid rgba(255,45,138,.3);}
+.badge-cy{background:rgba(0,229,255,.08);color:var(--cy);border:1px solid rgba(0,229,255,.3);}
+.hero-cta{
+  display:flex;gap:12px;margin-top:36px;flex-wrap:wrap;justify-content:center;
+  opacity:0;animation:fadeUp .7s 1.1s ease forwards;
+}
+.btn-primary{
+  font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:2px;
+  padding:14px 32px;background:var(--pk);color:#000;border:none;border-radius:4px;
+  cursor:pointer;text-decoration:none;text-transform:uppercase;
+  transition:all .2s;box-shadow:0 0 20px rgba(255,45,138,.3);
+}
+.btn-primary:hover{background:#ff5fa5;box-shadow:0 0 30px rgba(255,45,138,.5);transform:translateY(-1px);}
+.btn-secondary{
+  font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:2px;
+  padding:14px 32px;background:transparent;color:var(--cy);
+  border:1px solid var(--cy);border-radius:4px;
+  cursor:pointer;text-decoration:none;text-transform:uppercase;
+  transition:all .2s;
+}
+.btn-secondary:hover{background:rgba(0,229,255,.08);box-shadow:0 0 20px rgba(0,229,255,.2);transform:translateY(-1px);}
+
+/* ── SECTION WRAPPER ── */
+.section{position:relative;z-index:10;padding:80px 24px;}
+.section-inner{max-width:1100px;margin:0 auto;}
+.section-label{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;
+  color:var(--pk);text-transform:uppercase;margin-bottom:8px;
+}
+.section-title{
+  font-family:'Orbitron',monospace;font-size:clamp(28px,5vw,44px);
+  font-weight:900;letter-spacing:-1px;color:var(--tx);margin-bottom:40px;
+}
+.section-title span{color:var(--pk);}
+.divider{
+  height:1px;background:linear-gradient(90deg,transparent,var(--bd2),transparent);
+  margin:0;
+}
+
+/* ── PORTALS GRID ── */
+.portals-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:2px;
+}
+.portal-card{
+  background:var(--s2);border-left:3px solid var(--pk);
+  padding:24px;cursor:pointer;position:relative;overflow:hidden;
+  transition:all .25s;text-decoration:none;display:block;
+}
+.portal-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,45,138,.04) 0%,transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.portal-card:hover{background:var(--s3);transform:translateY(-2px);}
+.portal-card:hover::after{opacity:1;}
+.portal-card.pu{border-left-color:var(--pu);}
+.portal-card.cy{border-left-color:var(--cy);}
+.portal-card.re{border-left-color:var(--re);}
+.portal-card.ye{border-left-color:var(--ye);}
+.portal-card.or{border-left-color:var(--or);}
+.portal-card:hover.pu{box-shadow:inset 0 0 30px rgba(155,48,255,.06);}
+.portal-card:hover.cy{box-shadow:inset 0 0 30px rgba(0,229,255,.06);}
+.portal-card:hover.re{box-shadow:inset 0 0 30px rgba(255,51,51,.06);}
+.pc-tag{
+  font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;
+  color:var(--dm2);background:var(--s1);padding:3px 8px;border-radius:3px;
+  display:inline-block;margin-bottom:12px;
+}
+.pc-icon{font-size:28px;margin-bottom:10px;display:block;line-height:1;}
+.pc-title{
+  font-family:'Orbitron',monospace;font-size:18px;font-weight:700;
+  color:var(--tx);margin-bottom:8px;letter-spacing:.5px;
+}
+.pc-desc{font-size:14px;color:var(--dm2);line-height:1.5;font-weight:400;}
+.pc-desc strong{color:var(--tx);}
+.pc-arrow{
+  position:absolute;top:24px;right:20px;
+  font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--pk);
+  transition:transform .2s;opacity:.6;
+}
+.portal-card:hover .pc-arrow{transform:translateX(4px);opacity:1;}
+.portal-card.pu .pc-arrow{color:var(--pu);}
+.portal-card.cy .pc-arrow{color:var(--cy);}
+.portal-card.re .pc-arrow{color:var(--re);}
+.portal-card.ye .pc-arrow{color:var(--ye);}
+.portal-card.or .pc-arrow{color:var(--or);}
+
+/* ── RESTRICTED SECTION ── */
+.restricted-banner{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;margin-bottom:2px;
+  background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.2);
+  border-radius:4px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  color:var(--re);letter-spacing:2px;
+  animation:borderPulse 3s ease-in-out infinite;
+}
+
+/* ── JUICE WRLD SPECIAL ── */
+.jw-card{
+  background:linear-gradient(135deg,var(--s2) 0%,#0f0a1e 100%);
+  border:1px solid rgba(168,85,247,.2);padding:32px;
+  position:relative;overflow:hidden;
+}
+.jw-card::before{
+  content:'999';position:absolute;right:-20px;top:-20px;
+  font-family:'Orbitron',monospace;font-size:120px;font-weight:900;
+  color:rgba(168,85,247,.04);line-height:1;pointer-events:none;
+}
+.jw-title{
+  font-family:'Orbitron',monospace;font-size:32px;font-weight:900;
+  color:#c084fc;letter-spacing:1px;margin-bottom:8px;
+}
+.jw-sub{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(168,85,247,.6);letter-spacing:3px;}
+.jw-desc{margin-top:16px;font-size:16px;color:var(--dm2);line-height:1.6;}
+.jw-desc strong{color:#c084fc;}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2px;margin-bottom:60px;}
+.stat-card{background:var(--s2);padding:28px 24px;text-align:center;position:relative;}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--pk),transparent);
+  opacity:.4;
+}
+.stat-num{
+  font-family:'Orbitron',monospace;font-size:36px;font-weight:900;
+  color:var(--pk);line-height:1;margin-bottom:6px;
+}
+.stat-num.cy{color:var(--cy);}
+.stat-num.pu{color:var(--pu);}
+.stat-num.gn{color:var(--gn);}
+.stat-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dm2);}
+
+/* ── TECH STACK ── */
+.tech-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+.tech-chip{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
+  padding:6px 14px;border-radius:4px;transition:all .2s;
+}
+.tc-pk{background:rgba(255,45,138,.08);color:var(--pk);border:1px solid rgba(255,45,138,.25);}
+.tc-cy{background:rgba(0,229,255,.08);color:var(--cy);border:1px solid rgba(0,229,255,.25);}
+.tc-pu{background:rgba(155,48,255,.08);color:var(--pu);border:1px solid rgba(155,48,255,.25);}
+.tc-gn{background:rgba(74,222,128,.08);color:var(--gn);border:1px solid rgba(74,222,128,.25);}
+.tc-ye{background:rgba(251,191,36,.08);color:var(--ye);border:1px solid rgba(251,191,36,.25);}
+.tech-chip:hover{transform:scale(1.05);}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+@media(max-width:700px){.about-grid{grid-template-columns:1fr;}.topbar-nav{display:none;}}
+.about-text p{font-size:16px;line-height:1.75;color:var(--dm2);margin-bottom:14px;font-weight:400;}
+.about-text p strong{color:var(--tx);}
+.about-text p em{color:var(--pk);font-style:normal;font-weight:600;}
+.info-card{background:var(--s2);border:1px solid var(--bd2);padding:24px;border-radius:4px;}
+.info-card h4{
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;
+  color:var(--pk);margin-bottom:16px;text-transform:uppercase;
+}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);}
+.info-row:last-child{border-bottom:none;}
+.info-key{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dm2);}
+.info-val{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--tx);}
+.info-val.pk{color:var(--pk);}
+.info-val.gn{color:var(--gn);}
+.info-val.cy{color:var(--cy);}
+
+/* ── SEARCH ── */
+.search-block{
+  background:var(--s2);border:1px solid var(--bd2);padding:32px;
+  animation:borderPulse 4s ease-in-out infinite;
+}
+.search-row{display:flex;gap:10px;flex-wrap:wrap;}
+.s-input{
+  flex:1;min-width:220px;background:var(--s1);
+  border:1px solid var(--bd2);color:var(--tx);
+  padding:12px 16px;font-family:'Share Tech Mono',monospace;font-size:13px;
+  border-radius:4px;outline:none;transition:border-color .2s;
+}
+.s-input:focus{border-color:var(--pk);box-shadow:0 0 10px rgba(255,45,138,.15);}
+.s-input::placeholder{color:var(--dm);}
+.s-select{
+  background:var(--s1);border:1px solid var(--bd2);color:var(--tx);
+  padding:12px 16px;font-family:'Share Tech Mono',monospace;font-size:12px;
+  border-radius:4px;outline:none;cursor:pointer;
+}
+.s-btn{
+  padding:12px 24px;border:none;border-radius:4px;
+  font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;
+  letter-spacing:1px;cursor:pointer;transition:all .2s;
+}
+.s-btn-pk{background:var(--pk);color:#000;}
+.s-btn-pk:hover{background:#ff5fa5;box-shadow:0 0 16px var(--pk);}
+.s-btn-bd{background:transparent;color:var(--pu);border:1px solid var(--pu);}
+.s-btn-bd:hover{background:rgba(155,48,255,.1);}
+.engine-bar{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.eng{
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;
+  padding:5px 12px;background:var(--s1);border:1px solid var(--bd2);
+  color:var(--dm2);border-radius:4px;cursor:pointer;transition:all .2s;
+}
+.eng:hover,.eng.active{border-color:var(--pk);color:var(--pk);background:rgba(255,45,138,.08);}
+
+/* ── FOOTER ── */
+.footer{
+  position:relative;z-index:10;
+  padding:48px 32px 32px;
+  border-top:1px solid var(--bd2);
+  text-align:center;
+}
+.footer-logo{
+  font-family:'Orbitron',monospace;font-size:20px;font-weight:900;
+  color:var(--pk);letter-spacing:4px;
+  animation:neonPulse 3s ease-in-out infinite;
+  margin-bottom:12px;
+}
+.footer-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dm);letter-spacing:2px;margin-bottom:6px;}
+.footer-sub a{color:var(--ye);text-decoration:none;}
+.footer-sub a:hover{color:var(--pk);}
+.footer-line{height:1px;background:linear-gradient(90deg,transparent,var(--pk),transparent);margin:24px 0;opacity:.2;}
+
+/* ── IP WIDGET (top right) ── */
+#ip-display{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dm2);}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="scanline"></div>
+
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
+  <div class="topbar-logo">FEZZY <span>STATION</span></div>
+  <nav class="topbar-nav">
+    <a href="#portals">Portals</a>
+    <a href="#search">Search</a>
+    <a href="#stack">Stack</a>
+    <a href="#about">About</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="status-pill">
+      <span class="dot"></span>
+      <span>ONLINE</span>
+    </div>
+    <span id="ip-display">—</span>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-tag">► Self-Taught · Ravensmead · Cape Town · Built with Claude AI</div>
+  <h1 class="hero-title">FEZZY STATION</h1>
+  <div class="hero-sub">GRANT FEZZY FESTERS &nbsp;·&nbsp; <span>FEZZY</span> &nbsp;·&nbsp; 👽 &nbsp;·&nbsp; 999 ♾</div>
+  <p class="hero-desc">
+    A <strong>private media intelligence command centre</strong> living inside Termux on Android.
+    No subscriptions. No ads. No tracking.
+    <strong>No one knowing you were ever there.</strong>
+  </p>
+  <div class="hero-badges">
+    <span class="badge badge-gn">🐾 Bojack Armed</span>
+    <span class="badge badge-ye">Portals Active 🔐</span>
+    <span class="badge badge-pk">Privacy First 🚀</span>
+    <span class="badge badge-cy">1000+ Sites</span>
+  </div>
+  <div class="hero-cta">
+    <a href="#portals" class="btn-primary">Enter Station ►</a>
+    <a href="#search" class="btn-secondary">Free Search</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ STATS ══ -->
+<section class="section" style="padding:60px 24px;">
+  <div class="section-inner">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num">1000<span style="color:var(--dm2);font-size:20px">+</span></div>
+        <div class="stat-label">Supported Sites</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num cy">9</div>
+        <div class="stat-label">Active Portals</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num pu">0</div>
+        <div class="stat-label">Subscriptions Needed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num gn">100<span style="color:var(--dm2);font-size:20px">%</span></div>
+        <div class="stat-label">Private · No Trace</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ FREE SEARCH ══ -->
+<section class="section" id="search">
+  <div class="section-inner">
+    <div class="section-label">► Free Search</div>
+    <h2 class="section-title">No URL? <span>No Problem</span></h2>
+    <div class="search-block">
+      <div class="search-row">
+        <input class="s-input" id="searchInput" type="text" placeholder="type artist · song · title · keyword..." autocomplete="off">
+        <select class="s-select" id="searchType" onchange="updateEngines()">
+          <option value="music">🎵 Music</option>
+          <option value="video">🎬 Video</option>
+          <option value="torrent">🌀 Torrent</option>
+          <option value="person">👤 Person</option>
+          <option value="book">📚 Book</option>
+        </select>
+        <button class="s-btn s-btn-pk" onclick="runSearch()">SEARCH ►</button>
+        <button class="s-btn s-btn-bd" onclick="document.getElementById('searchInput').value=''">CLEAR</button>
+      </div>
+      <div class="engine-bar" id="engineBar">
+        <button class="eng active" data-engine="youtube">YouTube</button>
+        <button class="eng" data-engine="soundcloud">SoundCloud</button>
+        <button class="eng" data-engine="audiomack">Audiomack</button>
+        <button class="eng" data-engine="bandcamp">Bandcamp</button>
+        <button class="eng" data-engine="1337x" style="display:none">1337x</button>
+        <button class="eng" data-engine="piratebay" style="display:none">PirateBay</button>
+        <button class="eng" data-engine="nyaa" style="display:none">Nyaa</button>
+        <button class="eng" data-engine="archive" style="display:none">Archive.org</button>
+        <button class="eng" data-engine="gutenberg" style="display:none">Gutenberg</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ PORTALS ══ -->
+<section class="section" id="portals">
+  <div class="section-inner">
+    <div class="section-label">► Portals</div>
+    <h2 class="section-title">Command <span>Portals</span></h2>
+
+    <div class="portals-grid">
+
+      <!-- MUSIC -->
+      <a class="portal-card" href="#" onclick="launchPortal('music',event)">
+        <span class="pc-tag">[1] MUSIC</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">🎵</span>
+        <div class="pc-title">Music Portal</div>
+        <div class="pc-desc">Paste a URL from <strong>1000+ platforms</strong> — music lands as MP3 with artwork sealed in. Metadata clean. Albumwork intact.</div>
+      </a>
+
+      <!-- AUDIO RIP -->
+      <a class="portal-card cy" href="#" onclick="launchPortal('audiorip',event)">
+        <span class="pc-tag">[2] AUDIO RIP</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">🎙️</span>
+        <div class="pc-title">Audio Rip</div>
+        <div class="pc-desc">Rip audio from <strong>any video</strong> — YouTube · TikTok · Instagram. Strips to MP3, quality locked, no extra steps.</div>
+      </a>
+
+      <!-- VIDEO -->
+      <a class="portal-card" href="#" onclick="launchPortal('video',event)">
+        <span class="pc-tag">[3] VIDEO</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">🎬</span>
+        <div class="pc-title">Video Portal</div>
+        <div class="pc-desc">HQ merge · batch pull · <strong>TikTok · Instagram · Twitter</strong> · 1000+ sites · cookies loaded · lands clean every time.</div>
+      </a>
+
+      <!-- WEB GRAB -->
+      <a class="portal-card pu" href="#" onclick="launchPortal('webgrab',event)">
+        <span class="pc-tag">[4] WEB GRAB</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">🌐</span>
+        <div class="pc-title">Web Grab</div>
+        <div class="pc-desc">Full mirror · text only · wget precision. <strong>Froze the whole internet into the stash.</strong> Pink Tape playing offline forever.</div>
+      </a>
+
+      <!-- MUSIC SEARCH -->
+      <a class="portal-card cy" href="#search" onclick="document.getElementById('searchInput').focus()">
+        <span class="pc-tag">[5] SEARCH</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">🔍</span>
+        <div class="pc-title">Music Search</div>
+        <div class="pc-desc">Don't even need the URL — type Uzi type Carti, <strong>signal locks on its own</strong>. Top 10 in one pull. Artist · album · mood presets.</div>
+      </a>
+
+      <!-- TOOLS -->
+      <a class="portal-card ye" href="#" onclick="launchPortal('tools',event)">
+        <span class="pc-tag">[6] TOOLS</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">🔧</span>
+        <div class="pc-title">Tools</div>
+        <div class="pc-desc"><strong>Mothership maintenance bay</strong> · Bojack never sleeps · storage maps · htop · ncdu · battery watch · keep it running.</div>
+      </a>
+
+      <!-- BOOKS -->
+      <a class="portal-card pu" href="#" onclick="launchPortal('books',event)">
+        <span class="pc-tag">[7] BOOKS</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">📚</span>
+        <div class="pc-title">Book Portal</div>
+        <div class="pc-desc">Whole library pulled for <strong>free</strong> · 70,000 books · Project Gutenberg · Anna's Archive · PDF or TXT.</div>
+      </a>
+
+      <!-- SOCIAL -->
+      <a class="portal-card" href="#" onclick="launchPortal('social',event)">
+        <span class="pc-tag">[8] SOCIAL</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">🌐</span>
+        <div class="pc-title">Social Portal</div>
+        <div class="pc-desc">Paste their profile · <strong>drain every image every video</strong> clean · they don't know you was there · OSINT · all platforms.</div>
+      </a>
+
+      <!-- HACKER -->
+      <a class="portal-card cy" href="#" onclick="launchPortal('hacker',event)">
+        <span class="pc-tag">[9] HACKER</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">💀</span>
+        <div class="pc-title">Hacker Portal</div>
+        <div class="pc-desc">Full <strong>arsenal</strong> · Android only · rootless tools only · nmap · sherlock · whois. <strong>Bojack verified.</strong></div>
+      </a>
+
+      <!-- TORRENT -->
+      <a class="portal-card or" href="#" onclick="launchPortal('torrent',event)">
+        <span class="pc-tag">[T] TORRENT</span>
+        <span class="pc-arrow">►</span>
+        <span class="pc-icon">🌀</span>
+        <div class="pc-title">Torrent Portal</div>
+        <div class="pc-desc">Magnet links · <strong>1337x · ThePirateBay · Nyaa</strong> · aria2c downloads · no client needed · lands straight to storage.</div>
+      </a>
+
+    </div>
+
+    <!-- RESTRICTED -->
+    <div style="margin-top:40px;">
+      <div class="restricted-banner">
+        <span>⚠</span>
+        <span>RESTRICTED DIMENSION — 18+ ONLY — PRIVATE ACCESS</span>
+      </div>
+      <div class="portals-grid">
+        <a class="portal-card re" href="#" onclick="launchPortal('adult',event)">
+          <span class="pc-tag">[A] ADULT</span>
+          <span class="pc-arrow">►</span>
+          <span class="pc-icon">💊</span>
+          <div class="pc-title">Adult Portal</div>
+          <div class="pc-desc">Every platform. No trace. No account needed · rip · archive · metadata stripped · <strong>Bojack never tells.</strong></div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ JUICE WRLD ══ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="jw-card">
+      <div class="jw-title">JUICE WRLD 🔴</div>
+      <div class="jw-sub">999 FOREVER · VAULT NEVER CLOSES</div>
+      <p class="jw-desc">
+        <strong>Unreleased</strong> · all platforms · archive protected · Lucid Dreams · Legends Never Die ·
+        <strong>every track that ever existed</strong> — sealed in the stash.
+      </p>
+      <div style="margin-top:20px;">
+        <button class="btn-primary" onclick="runJuiceSearch()">Search Vault ►</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ TECH STACK ══ -->
+<section class="section" id="stack">
+  <div class="section-inner">
+    <div class="section-label">► Tech Stack</div>
+    <h2 class="section-title">Built <span>On</span></h2>
+    <div class="tech-grid">
+      <span class="tech-chip tc-pk">Termux (Android)</span>
+      <span class="tech-chip tc-cy">Python 3</span>
+      <span class="tech-chip tc-pk">Flask</span>
+      <span class="tech-chip tc-gn">yt-dlp</span>
+      <span class="tech-chip tc-gn">gallery-dl</span>
+      <span class="tech-chip tc-ye">ffmpeg</span>
+      <span class="tech-chip tc-ye">aria2c</span>
+      <span class="tech-chip tc-pu">nmap</span>
+      <span class="tech-chip tc-pu">sherlock</span>
+      <span class="tech-chip tc-cy">wget</span>
+      <span class="tech-chip tc-pk">curl</span>
+      <span class="tech-chip tc-gn">git + GitHub</span>
+      <span class="tech-chip tc-cy">Claude AI</span>
+      <span class="tech-chip tc-pk">No root required</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ ABOUT ══ -->
+<section class="section" id="about">
+  <div class="section-inner">
+    <div class="section-label">► About</div>
+    <h2 class="section-title">The <span>Operator</span></h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          Fezzy Station is a <em>private media intelligence command centre</em> built entirely
+          inside Termux on Android. No desktop. No root. Just a phone, a terminal, and the will
+          to build something that <strong>actually works</strong>.
+        </p>
+        <p>
+          Built by <strong>Grant Fezzy Festers</strong> — self-taught, operating out of
+          <strong>Ravensmead, Cape Town</strong>. Constructed alongside <em>Claude AI</em>,
+          one portal at a time.
+        </p>
+        <p>
+          Paste a URL from <strong>1000+ platforms</strong> — music lands as MP3 with artwork sealed in.
+          Video pulls HQ. Galleries ripped clean. Books free. Social profiles drained.
+          <em>All metadata stripped. All traffic masked.</em>
+        </p>
+        <p>
+          <strong>No subscriptions. No ads. No tracking.</strong> No one knowing you were ever there.
+        </p>
+      </div>
+      <div>
+        <div class="info-card">
+          <h4>Station Identity</h4>
+          <div class="info-row">
+            <span class="info-key">OPERATOR</span>
+            <span class="info-val pk">Grant Fezzy Festers</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">CALLSIGN</span>
+            <span class="info-val">FEZZY 👽</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">LOCATION</span>
+            <span class="info-val">Ravensmead · Cape Town</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">PLATFORM</span>
+            <span class="info-val cy">Termux · Android</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">STATUS</span>
+            <span class="info-val gn">ONLINE ●</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">CONTACT</span>
+            <span class="info-val"><a href="tel:0739301858" style="color:var(--ye);text-decoration:none;">073 930 1858</a></span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">BUILT WITH</span>
+            <span class="info-val pk">Claude AI 🤖</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">MASCOT</span>
+            <span class="info-val">Bojack 🐾</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer">
+  <div class="footer-logo">FEZZY STATION</div>
+  <div class="footer-sub">GRANT FEZZY FESTERS · RAVENSMEAD · CAPE TOWN</div>
+  <div class="footer-sub">BUILT WITH <span style="color:var(--pk)">♥</span> AND CLAUDE AI · 999 ♾ 🔴</div>
+  <div class="footer-line"></div>
+  <div class="footer-sub">WhatsApp: <a href="tel:0739301858">073 930 1858</a> &nbsp;·&nbsp; No subscriptions. No ads. <span style="color:var(--pk)">Privacy first.</span></div>
+</footer>
+
+<script>
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  document.querySelector('.topbar-right #ip-display').textContent =
+    now.toLocaleTimeString('en-ZA', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── FETCH IP ──
+fetch('/api/ip').then(r=>r.json()).then(d=>{
+  // prepend IP to topbar if on Flask
+}).catch(()=>{});
+
+// ── SEARCH ENGINE MAP ──
+const engineMap = {
+  music:   ['youtube','soundcloud','audiomack','bandcamp'],
+  video:   ['youtube','1337x','piratebay'],
+  torrent: ['1337x','piratebay','nyaa'],
+  person:  ['youtube','archive'],
+  book:    ['gutenberg','archive']
+};
+let activeEngine = 'youtube';
+
+document.querySelectorAll('.eng').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.eng').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeEngine = btn.dataset.engine;
+  });
+});
+
+function updateEngines() {
+  const type = document.getElementById('searchType').value;
+  const show = engineMap[type] || ['youtube'];
+  document.querySelectorAll('.eng').forEach(btn=>{
+    btn.style.display = show.includes(btn.dataset.engine) ? 'inline-block' : 'none';
+    btn.classList.remove('active');
+  });
+  const first = document.querySelector(`.eng[data-engine="${show[0]}"]`);
+  if(first){ first.classList.add('active'); activeEngine = show[0]; }
+}
+
+const searchUrls = {
+  youtube:    q=>`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,
+  soundcloud: q=>`https://soundcloud.com/search?q=${encodeURIComponent(q)}`,
+  audiomack:  q=>`https://audiomack.com/search/${encodeURIComponent(q)}`,
+  bandcamp:   q=>`https://bandcamp.com/search?q=${encodeURIComponent(q)}`,
+  '1337x':    q=>`https://1337x.to/search/${encodeURIComponent(q)}/1/`,
+  piratebay:  q=>`https://thepiratebay.org/search.php?q=${encodeURIComponent(q)}`,
+  nyaa:       q=>`https://nyaa.si/?q=${encodeURIComponent(q)}`,
+  archive:    q=>`https://archive.org/search?query=${encodeURIComponent(q)}`,
+  gutenberg:  q=>`https://www.gutenberg.org/ebooks/search/?query=${encodeURIComponent(q)}`
+};
+
+function runSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if(!q) return;
+  const url = searchUrls[activeEngine]?.(q);
+  if(url) window.open(url,'_blank');
+}
+document.getElementById('searchInput').addEventListener('keydown',e=>{ if(e.key==='Enter') runSearch(); });
+
+function runJuiceSearch() {
+  window.open('https://www.youtube.com/results?search_query=Juice+WRLD+unreleased','_blank');
+}
+
+// ── PORTAL LAUNCHER ──
+// Links to the portal logic — on Termux/Flask these would
+// trigger actual yt-dlp commands via /api/download
+const portalUrls = {
+  music:    null,
+  audiorip: null,
+  video:    null,
+  webgrab:  null,
+  tools:    null,
+  books:    'https://gutenberg.org',
+  social:   null,
+  hacker:   null,
+  torrent:  'https://1337x.to',
+  adult:    null,
+  juicewrld:'https://www.youtube.com/results?search_query=Juice+WRLD'
+};
+
+function launchPortal(name, e) {
+  if(e) e.preventDefault();
+  const url = portalUrls[name];
+  if(url) {
+    window.open(url,'_blank');
+    return;
+  }
+  // If running under Flask, could POST to /api/download
+  // For standalone HTML: show a tooltip
+  const card = e && e.currentTarget;
+  if(card) {
+    const original = card.style.borderLeftColor;
+    card.style.borderLeftColor = 'var(--cy)';
+    setTimeout(()=>{ card.style.borderLeftColor = original; }, 300);
+  }
+}
+
+// ── FADE IN ON SCROLL ──
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.style.opacity='1';
+      entry.target.style.transform='translateY(0)';
+    }
+  });
+},{threshold:0.1});
+
+document.querySelectorAll('.portal-card,.stat-card,.info-card,.jw-card').forEach(el=>{
+  el.style.opacity='0';
+  el.style.transform='translateY(16px)';
+  el.style.transition='opacity .5s ease, transform .5s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>

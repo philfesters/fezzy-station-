@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEZZY STATION — GRANT FEZZY FESTERS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --pink: #ff2d8a;
+    --purple: #9b30ff;
+    --cyan: #00e5ff;
+    --dark: #080810;
+    --card: #0d0d1a;
+    --border: #1a1a2e;
+    --text: #e0e0ff;
+    --dim: #555577;
+    --red: #ff3333;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  @keyframes glitch {
+    0%   { clip-path: inset(0 0 95% 0); transform: translate(-3px,0); }
+    10%  { clip-path: inset(30% 0 50% 0); transform: translate(3px,0); }
+    20%  { clip-path: inset(70% 0 10% 0); transform: translate(-3px,0); }
+    30%  { clip-path: inset(20% 0 70% 0); transform: translate(0,0); }
+    40%  { clip-path: inset(60% 0 20% 0); transform: translate(3px,0); }
+    50%  { clip-path: inset(10% 0 85% 0); transform: translate(-3px,0); }
+    100% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  }
+  @keyframes glitch2 {
+    0%   { clip-path: inset(50% 0 30% 0); transform: translate(3px,0); color: var(--purple); }
+    20%  { clip-path: inset(80% 0 5% 0); transform: translate(-3px,0); color: var(--cyan); }
+    50%  { clip-path: inset(20% 0 60% 0); transform: translate(3px,0); color: var(--pink); }
+    100% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  }
+  @keyframes neonPulse {
+    0%,100% { text-shadow: 0 0 8px var(--pink),0 0 20px var(--pink),0 0 40px var(--pink); }
+    50%     { text-shadow: 0 0 4px var(--pink),0 0 10px var(--pink); }
+  }
+  @keyframes flicker {
+    0%,95%,100% { opacity:1; }
+    96% { opacity:0.4; }
+    97% { opacity:1; }
+    98% { opacity:0.6; }
+    99% { opacity:1; }
+  }
+  @keyframes slideIn {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes scan {
+    0%   { transform:translateY(-100%); }
+    100% { transform:translateY(100vh); }
+  }
+  @keyframes borderPulse {
+    0%,100% { border-color:var(--pink); box-shadow:0 0 8px var(--pink); }
+    50%     { border-color:var(--purple); box-shadow:0 0 8px var(--purple); }
+  }
+  @keyframes redPulse {
+    0%,100% { border-color:var(--red); box-shadow:0 0 8px var(--red); }
+    50%     { border-color:#ff7700; box-shadow:0 0 8px #ff7700; }
+  }
+  @keyframes chipHover {
+    from { transform:scale(1); }
+    to   { transform:scale(1.05); }
+  }
+
+  .scanline {
+    position:fixed; top:0; left:0; right:0;
+    height:2px;
+    background:linear-gradient(90deg,transparent,var(--pink),transparent);
+    opacity:0.15;
+    animation:scan 6s linear infinite;
+    pointer-events:none;
+    z-index:998;
+  }
+
+  /* HEADER */
+  .header { padding:28px 20px 16px; border-bottom:1px solid var(--border); animation:slideIn 0.5s ease; }
+  .header-tag { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--pink); letter-spacing:3px; text-transform:uppercase; margin-bottom:8px; }
+  .site-title {
+    font-size:clamp(36px,10vw,56px); font-weight:700; color:var(--pink); letter-spacing:-1px; line-height:1;
+    position:relative; animation:neonPulse 3s ease-in-out infinite, flicker 8s infinite;
+  }
+  .site-title::before,.site-title::after { content:'FEZZY STATION'; position:absolute; top:0; left:0; width:100%; }
+  .site-title::before { animation:glitch 4s infinite; color:var(--cyan); opacity:0.5; }
+  .site-title::after  { animation:glitch2 4s infinite 0.1s; color:var(--purple); opacity:0.5; }
+  .header-sub { margin-top:8px; font-size:11px; color:var(--dim); font-family:'JetBrains Mono',monospace; letter-spacing:2px; }
+  .header-sub span { color:var(--text); }
+  .badges { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .badge { font-size:10px; font-family:'JetBrains Mono',monospace; padding:4px 10px; border-radius:4px; font-weight:700; letter-spacing:1px; }
+  .badge-green  { background:#0a2a0a; color:#4ade80; border:1px solid #4ade80; }
+  .badge-yellow { background:#2a1a00; color:#fbbf24; border:1px solid #fbbf24; }
+  .badge-pink   { background:#2a0015; color:var(--pink); border:1px solid var(--pink); }
+
+  /* SYNOPSIS */
+  .synopsis { padding:20px; border-bottom:1px solid var(--border); animation:slideIn 0.6s ease; }
+  .synopsis p { font-size:14px; line-height:1.7; color:var(--text); margin-bottom:10px; }
+  .hl-pink   { color:var(--pink);   font-weight:600; }
+  .hl-green  { color:#4ade80;       font-weight:600; }
+  .hl-yellow { color:#fbbf24;       font-weight:600; }
+  .hl-purple { color:var(--purple); font-weight:600; }
+  .hl-cyan   { color:var(--cyan);   font-weight:600; }
+
+  /* SEARCH */
+  .search-section { padding:20px; border-bottom:1px solid var(--border); }
+  .section-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--pink); letter-spacing:3px; text-transform:uppercase; margin-bottom:14px; }
+  .search-box { display:flex; flex-direction:column; gap:10px; }
+  .search-row { display:flex; gap:8px; flex-wrap:wrap; }
+  .search-input {
+    flex:1; min-width:200px; background:#0a0a18; border:1px solid var(--border);
+    color:var(--text); padding:10px 14px; font-family:'JetBrains Mono',monospace;
+    font-size:13px; border-radius:4px; outline:none; transition:border-color 0.2s;
+  }
+  .search-input:focus { border-color:var(--pink); box-shadow:0 0 8px rgba(255,45,138,0.2); }
+  .search-input::placeholder { color:var(--dim); }
+  .search-select {
+    background:#0a0a18; border:1px solid var(--border); color:var(--text);
+    padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:12px;
+    border-radius:4px; outline:none; cursor:pointer;
+  }
+  .search-select:focus { border-color:var(--pink); }
+  .btn { padding:10px 18px; border:none; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; cursor:pointer; letter-spacing:1px; transition:all 0.2s; }
+  .btn-pink   { background:var(--pink); color:#000; }
+  .btn-pink:hover { background:#ff5fa6; box-shadow:0 0 12px var(--pink); }
+  .btn-purple { background:transparent; color:var(--purple); border:1px solid var(--purple); }
+  .btn-purple:hover { background:rgba(155,48,255,0.1); box-shadow:0 0 8px var(--purple); }
+  .search-engines { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+  .engine-btn {
+    font-size:10px; padding:4px 10px; background:#0a0a18; border:1px solid var(--border);
+    color:var(--dim); border-radius:4px; cursor:pointer; font-family:'JetBrains Mono',monospace; transition:all 0.2s;
+  }
+  .engine-btn:hover { border-color:var(--pink); color:var(--pink); }
+  .engine-btn.active { border-color:var(--pink); color:var(--pink); background:rgba(255,45,138,0.08); }
+
+  /* PORTALS */
+  .portals-section { padding:20px 20px 0; }
+  .portal-card {
+    border-left:3px solid var(--pink); background:var(--card); margin-bottom:2px;
+    padding:16px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; animation:slideIn 0.5s ease;
+  }
+  .portal-card::after {
+    content:''; position:absolute; top:0; left:-100%; right:0; bottom:0;
+    background:linear-gradient(90deg,transparent,rgba(255,45,138,0.04),transparent);
+    transition:left 0.4s ease;
+  }
+  .portal-card:hover::after { left:100%; }
+  .portal-card:hover { background:#0f0f20; box-shadow:inset 0 0 20px rgba(255,45,138,0.05); }
+  .portal-card.purple-border { border-left-color:var(--purple); }
+  .portal-card.cyan-border { border-left-color:var(--cyan); }
+  .portal-card.red-border { border-left-color:var(--red); }
+  .portal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .portal-tag { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--pink); letter-spacing:2px; font-weight:700; }
+  .portal-arrow { font-size:18px; color:var(--pink); }
+  .portal-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:6px; letter-spacing:-0.5px; }
+  .portal-desc { font-size:12px; color:var(--dim); line-height:1.6; }
+
+  .expand-content { max-height:0; overflow:hidden; transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1); }
+  .expand-content.open { max-height:1000px; }
+  .expand-toggle {
+    display:block; text-align:center; margin-top:14px; font-size:10px; color:var(--pink);
+    font-family:'JetBrains Mono',monospace; letter-spacing:2px; cursor:pointer; font-weight:700;
+  }
+  .subsection-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--cyan); letter-spacing:2px; margin:16px 0 10px; text-transform:uppercase; }
+  .chip-grid { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .chip {
+    font-size:10px; padding:6px 12px; border-radius:4px; cursor:pointer;
+    font-family:'JetBrains Mono',monospace; font-weight:600; transition:all 0.2s;
+  }
+  .chip-pink { background:rgba(255,45,138,0.08); color:var(--pink); border:1px solid rgba(255,45,138,0.3); }
+  .chip-pink:hover { background:rgba(255,45,138,0.15); border-color:var(--pink); transform:scale(1.05); }
+  .chip-red { background:rgba(255,51,51,0.08); color:var(--red); border:1px solid rgba(255,51,51,0.3); }
+  .chip-red:hover { background:rgba(255,51,51,0.15); border-color:var(--red); transform:scale(1.05); }
+
+  /* SHORTCUTS */
+  .shortcuts { padding:20px; border-top:1px solid var(--border); }
+  .shortcut-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .shortcut-chip {
+    background:#0a0a18; border:1px solid var(--border); color:var(--dim);
+    padding:8px 14px; border-radius:4px; font-family:'JetBrains Mono',monospace;
+    font-size:11px; cursor:pointer; transition:all 0.2s; font-weight:600;
+  }
+  .shortcut-chip:hover { border-color:var(--pink); color:var(--pink); background:rgba(255,45,138,0.05); }
+
+  /* DIVIDERS */
+  .section-divider {
+    text-align:center; padding:12px 20px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; color:var(--pink); letter-spacing:4px; font-weight:700;
+    border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+    background:rgba(255,45,138,0.02);
+  }
+
+  /* CONTACT */
+  .contact-section {
+    padding:24px 20px;
+    border-top:1px solid var(--border);
+    background:linear-gradient(135deg, #0a0a18 0%, #0d0d1a 100%);
+  }
+  .contact-header {
+    font-size:20px;
+    font-weight:700;
+    color:var(--pink);
+    margin-bottom:16px;
+    letter-spacing:-0.5px;
+  }
+  .contact-grid {
+    display:grid;
+    gap:12px;
+  }
+  .contact-item {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-left:3px solid var(--pink);
+    padding:14px;
+    border-radius:4px;
+    transition:all 0.2s;
+  }
+  .contact-item:hover {
+    border-left-color:var(--cyan);
+    background:#0f0f20;
+    box-shadow:0 0 12px rgba(0,229,255,0.1);
+  }
+  .contact-label {
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--dim);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .contact-value {
+    font-size:14px;
+    color:var(--text);
+    font-weight:600;
+  }
+  .contact-value a {
+    color:var(--pink);
+    text-decoration:none;
+    transition:color 0.2s;
+  }
+  .contact-value a:hover {
+    color:var(--cyan);
+  }
+  .contact-note {
+    margin-top:16px;
+    padding:12px;
+    background:rgba(255,45,138,0.05);
+    border:1px solid rgba(255,45,138,0.2);
+    border-radius:4px;
+    font-size:11px;
+    color:var(--dim);
+    line-height:1.6;
+  }
+  .contact-note strong {
+    color:var(--pink);
+  }
+
+  /* FOOTER */
+  .footer {
+    padding:24px 20px 100px;
+    text-align:center;
+    border-top:1px solid var(--border);
+    background:var(--dark);
+  }
+  .footer-brand {
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--pink);
+    letter-spacing:3px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .footer-sub {
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--dim);
+    letter-spacing:2px;
+  }
+  .footer-sub a {
+    color:var(--cyan);
+    text-decoration:none;
+  }
+  .footer-sub a:hover {
+    color:var(--pink);
+  }
+
+  /* NAV */
+  .nav-bar {
+    position:fixed; bottom:0; left:0; right:0;
+    display:flex; justify-content:space-around;
+    background:rgba(13,13,26,0.95); backdrop-filter:blur(10px);
+    border-top:1px solid var(--border);
+    padding:10px 0;
+    z-index:1000;
+  }
+  .nav-btn {
+    background:none; border:none; color:var(--dim);
+    font-family:'JetBrains Mono',monospace; font-size:10px;
+    padding:8px 16px; cursor:pointer; letter-spacing:1px; font-weight:700;
+    transition:all 0.2s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    color:var(--pink);
+  }
+
+  /* INFO MODAL */
+  .info-modal {
+    display:none;
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.9);
+    z-index:2000;
+    padding:20px;
+    overflow-y:auto;
+  }
+  .info-modal.active {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .info-content {
+    background:var(--card);
+    border:2px solid var(--pink);
+    border-radius:8px;
+    padding:24px;
+    max-width:500px;
+    width:100%;
+  }
+  .info-title {
+    font-size:22px;
+    font-weight:700;
+    color:var(--pink);
+    margin-bottom:16px;
+  }
+  .info-text {
+    font-size:13px;
+    line-height:1.7;
+    color:var(--text);
+    margin-bottom:12px;
+  }
+  .info-close {
+    background:var(--pink);
+    color:#000;
+    border:none;
+    padding:10px 20px;
+    border-radius:4px;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">BOJACK FEZZY 999</div>
+  <h1 class="site-title">FEZZY STATION</h1>
+  <div class="header-sub">GRANT FEZZY FESTERS · <span>STRATEGY OVER IMPULSE</span></div>
+  <div class="badges">
+    <span class="badge badge-green">LIVE</span>
+    <span class="badge badge-yellow">TERMUX BUILD</span>
+    <span class="badge badge-pink">RAVENSMEAD · CPT</span>
+  </div>
+</div>
+
+<!-- SYNOPSIS -->
+<div class="synopsis">
+  <p>Multi-platform <span class="hl-pink">search portal</span> built in <span class="hl-green">Termux</span> on Android 14. Search across <span class="hl-cyan">YouTube, SoundCloud, Audiomack, 1337x, ThePirateBay, Nyaa</span> and more. Adult content discovery. <span class="hl-purple">Juice WRLD</span> vault access. <span class="hl-yellow">Strategy Over Impulse</span> brand.</p>
+  <p><strong style="color:var(--pink);">Note:</strong> Download features require <span class="hl-cyan">Termux installation</span>. This web version provides search & link functionality.</p>
+</div>
+
+<!-- UNIFIED SEARCH -->
+<div class="search-section">
+  <div class="section-label">UNIFIED SEARCH</div>
+  <div class="search-box">
+    <div class="search-row">
+      <input type="text" id="searchInput" class="search-input" placeholder="Enter search query...">
+      <select id="searchType" class="search-select">
+        <option value="music">Music</option>
+        <option value="video">Video</option>
+        <option value="torrent">Torrent</option>
+        <option value="person">Person</option>
+        <option value="book">Book</option>
+      </select>
+    </div>
+    <div class="search-row">
+      <button class="btn btn-pink" onclick="runSearch()">SEARCH</button>
+      <button class="btn btn-purple" onclick="clearSearch()">CLEAR</button>
+    </div>
+    <div class="search-engines">
+      <button class="engine-btn active" data-engine="youtube">YouTube</button>
+      <button class="engine-btn" data-engine="soundcloud">SoundCloud</button>
+      <button class="engine-btn" data-engine="audiomack">Audiomack</button>
+      <button class="engine-btn" data-engine="bandcamp">Bandcamp</button>
+      <button class="engine-btn" data-engine="1337x" style="display:none;">1337x</button>
+      <button class="engine-btn" data-engine="piratebay" style="display:none;">PirateBay</button>
+      <button class="engine-btn" data-engine="nyaa" style="display:none;">Nyaa</button>
+      <button class="engine-btn" data-engine="archive" style="display:none;">Archive.org</button>
+      <button class="engine-btn" data-engine="gutenberg" style="display:none;">Gutenberg</button>
+    </div>
+  </div>
+</div>
+
+<!-- PORTALS -->
+<div class="section-divider">PORTALS</div>
+<div class="portals-section">
+
+  <!-- ADULT PORTAL -->
+  <div class="portal-card red-border" onclick="toggleAdult(event)">
+    <div class="portal-header">
+      <span class="portal-tag" style="color:#ff5555;">[A] ADULT</span>
+      <span class="portal-arrow" id="adultArrow" style="color:#ff5555;">►</span>
+    </div>
+    <div class="portal-title" style="color:#ff7777;">ADULT PORTAL 🔞</div>
+    <div class="portal-desc">18+ only · quick search · <span style="color:#ff5555;">Pornhub · XVideos · xHamster · RedTube · YouPorn · SpankBang</span> · all platforms indexed</div>
+    
+    <div class="expand-content" id="adultExpand">
+      <!-- PERFORMERS -->
+      <div class="subsection-label">► PERFORMERS</div>
+      <div class="chip-grid">
+        <span class="chip chip-pink" onclick="searchAdult('Riley Reid')">Riley Reid</span>
+        <span class="chip chip-pink" onclick="searchAdult('Mia Khalifa')">Mia Khalifa</span>
+        <span class="chip chip-pink" onclick="searchAdult('Lana Rhoades')">Lana Rhoades</span>
+        <span class="chip chip-pink" onclick="searchAdult('Abella Danger')">Abella Danger</span>
+        <span class="chip chip-pink" onclick="searchAdult('Adriana Chechik')">Adriana Chechik</span>
+        <span class="chip chip-pink" onclick="searchAdult('Angela White')">Angela White</span>
+        <span class="chip chip-pink" onclick="searchAdult('Asa Akira')">Asa Akira</span>
+        <span class="chip chip-pink" onclick="searchAdult('Karlee Grey')">Karlee Grey</span>
+        <span class="chip chip-pink" onclick="searchAdult('Elsa Jean')">Elsa Jean</span>
+        <span class="chip chip-pink" onclick="searchAdult('Naomi Woods')">Naomi Woods</span>
+        <span class="chip chip-pink" onclick="searchAdult('Eva Lovia')">Eva Lovia</span>
+        <span class="chip chip-pink" onclick="searchAdult('Dani Daniels')">Dani Daniels</span>
+        <span class="chip chip-pink" onclick="searchAdult('Keisha Grey')">Keisha Grey</span>
+        <span class="chip chip-pink" onclick="searchAdult('Sophia Leone')">Sophia Leone</span>
+        <span class="chip chip-pink" onclick="searchAdult('Leah Gotti')">Leah Gotti</span>
+        <span class="chip chip-pink" onclick="searchAdult('Emily Willis')">Emily Willis</span>
+        <span class="chip chip-pink" onclick="searchAdult('Violet Starr')">Violet Starr</span>
+        <span class="chip chip-pink" onclick="searchAdult('Sasha Grey')">Sasha Grey</span>
+        <span class="chip chip-pink" onclick="searchAdult('Skin Diamond')">Skin Diamond</span>
+        <span class="chip chip-pink" onclick="searchAdult('Jenna Haze')">Jenna Haze</span>
+        <span class="chip chip-pink" onclick="searchAdult('Lisa Ann')">Lisa Ann</span>
+      </div>
+
+      <!-- PLATFORMS -->
+      <div class="subsection-label">► PLATFORMS</div>
+      <div class="chip-grid">
+        <span class="chip chip-red" onclick="openAdultSite('https://www.xvideos.com')">XVideos</span>
+        <span class="chip chip-red" onclick="openAdultSite('https://www.pornhub.com')">Pornhub</span>
+        <span class="chip chip-red" onclick="openAdultSite('https://xhamster.com')">xHamster</span>
+        <span class="chip chip-red" onclick="openAdultSite('https://www.redtube.com')">RedTube</span>
+        <span class="chip chip-red" onclick="openAdultSite('https://www.youporn.com')">YouPorn</span>
+        <span class="chip chip-red" onclick="openAdultSite('https://spankbang.com')">SpankBang</span>
+        <span class="chip chip-red" onclick="openAdultSite('https://www.eporner.com')">Eporner</span>
+        <span class="chip chip-red" onclick="openAdultSite('https://www.tube8.com')">Tube8</span>
+      </div>
+    </div>
+
+    <span class="expand-toggle" id="adultToggleText">▼ EXPAND PORTAL</span>
+  </div>
+
+  <!-- TORRENT PORTAL -->
+  <div class="portal-card red-border" onclick="showInfo()">
+    <div class="portal-header">
+      <span class="portal-tag" style="color:#ff5555;">[T] TORRENT</span>
+      <span class="portal-arrow" style="color:#ff5555;">►</span>
+    </div>
+    <div class="portal-title" style="color:#ff7777;">TORRENT SEARCH 🌀</div>
+    <div class="portal-desc">Search <span style="color:#ff5555;">1337x · ThePirateBay · Nyaa</span> via unified search above · Download features require Termux installation</div>
+  </div>
+
+</div>
+
+<!-- JUICE WRLD -->
+<div class="section-divider" style="margin-top:16px;">999 FOREVER</div>
+<div class="portals-section">
+  <div class="portal-card purple-border" onclick="window.open('https://www.youtube.com/results?search_query=juice+wrld+unreleased', '_blank')" style="border-left-color:#a855f7;background:linear-gradient(135deg,#0d0d1a 0%,#0f0a1a 100%);">
+    <div class="portal-header">
+      <span class="portal-tag" style="color:#a855f7;">[J] JUICE WRLD</span>
+      <span class="portal-arrow" style="color:#a855f7;">►</span>
+    </div>
+    <div class="portal-title" style="color:#c084fc;">JUICE WRLD 🔴</div>
+    <div class="portal-desc">999 forever · vault never closes · <span class="hl-purple">unreleased tracks</span> · YouTube search · Lucid Dreams · Legends Never Die · All Girls Are The Same</div>
+  </div>
+</div>
+
+<!-- CONTACT SECTION -->
+<div class="contact-section">
+  <div class="contact-header">CONTACT & REACH OUT</div>
+  <div class="contact-grid">
+    <div class="contact-item">
+      <div class="contact-label">EMAIL</div>
+      <div class="contact-value"><a href="mailto:philfesters@gmail.com">philfesters@gmail.com</a></div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-label">PHONE / WHATSAPP</div>
+      <div class="contact-value"><a href="tel:+27739301858">073 930 1858</a></div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-label">FACEBOOK</div>
+      <div class="contact-value"><a href="https://www.facebook.com/grant.festers" target="_blank">Grant Festers</a></div>
+    </div>
+  </div>
+  <div class="contact-note">
+    <strong>BUILT BY GRANT FEZZY FESTERS</strong> — Independent developer based in Ravensmead, Cape Town, South Africa. This project was built entirely in Termux on Android 14. For collaborations, feedback, or inquiries about the full Termux build, reach out via any channel above.
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-brand">FEZZY STATION · BOJACK FEZZY 999</div>
+  <div class="footer-sub">RAVENSMEAD · CAPE TOWN · SOUTH AFRICA</div>
+  <div class="footer-sub" style="margin-top:6px;">STRATEGY OVER IMPULSE · BUILT WITH CLAUDE AI</div>
+  <div class="footer-sub" style="margin-top:10px;color:var(--cyan);">
+    <a href="#" onclick="showIPInfo(event)">VIEW IP INFO</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <button class="nav-btn active" onclick="window.scrollTo({top:0,behavior:'smooth'})">HOME</button>
+  <button class="nav-btn" onclick="window.scrollTo({top:document.querySelector('.search-section').offsetTop,behavior:'smooth'})">SEARCH</button>
+  <button class="nav-btn" onclick="window.scrollTo({top:document.querySelector('.contact-section').offsetTop,behavior:'smooth'})">CONTACT</button>
+  <button class="nav-btn" onclick="showInfo()">INFO</button>
+  <button class="nav-btn" onclick="showIPInfo(event)">IP</button>
+</nav>
+
+<!-- INFO MODAL -->
+<div class="info-modal" id="infoModal">
+  <div class="info-content">
+    <div class="info-title">ABOUT FEZZY STATION</div>
+    <div class="info-text">
+      <strong style="color:var(--pink);">What Works:</strong><br>
+      • All search functionality (YouTube, SoundCloud, Audiomack, torrent sites, etc.)<br>
+      • Adult portal performer & platform links<br>
+      • IP info lookup<br>
+      • All external site links
+    </div>
+    <div class="info-text">
+      <strong style="color:var(--cyan);">Termux-Only Features:</strong><br>
+      • Direct downloads (gallery-dl, yt-dlp)<br>
+      • Security scanning tools (Trivy, Nuclei, Nikto)<br>
+      • Full FEZZY Security Dashboard<br>
+      • Offline functionality
+    </div>
+    <div class="info-text">
+      This web version showcases the UI and provides working search/link functionality. For the full Termux installation with download capabilities, contact Grant Festers.
+    </div>
+    <button class="info-close" onclick="closeInfo()">CLOSE</button>
+  </div>
+</div>
+
+<script>
+// ENGINE SELECTOR
+const engines = document.querySelectorAll('.engine-btn');
+let activeEngine = 'youtube';
+engines.forEach(btn => {
+  btn.addEventListener('click', () => {
+    engines.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeEngine = btn.dataset.engine;
+  });
+});
+
+document.getElementById('searchType').addEventListener('change', function() {
+  const map = {
+    music:   ['youtube','soundcloud','audiomack','bandcamp'],
+    video:   ['youtube','1337x','piratebay'],
+    torrent: ['1337x','piratebay','nyaa'],
+    person:  ['youtube','archive'],
+    book:    ['gutenberg','archive']
+  };
+  const show = map[this.value] || [];
+  engines.forEach(btn => {
+    btn.style.display = show.includes(btn.dataset.engine) ? 'inline-block' : 'none';
+    btn.classList.remove('active');
+  });
+  const first = document.querySelector('.engine-btn[data-engine="'+show[0]+'"]');
+  if (first) { first.classList.add('active'); activeEngine = show[0]; }
+});
+
+const searchUrls = {
+  youtube:    q => `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,
+  soundcloud: q => `https://soundcloud.com/search?q=${encodeURIComponent(q)}`,
+  audiomack:  q => `https://audiomack.com/search/${encodeURIComponent(q)}`,
+  bandcamp:   q => `https://bandcamp.com/search?q=${encodeURIComponent(q)}`,
+  '1337x':    q => `https://1337x.to/search/${encodeURIComponent(q)}/1/`,
+  piratebay:  q => `https://thepiratebay.org/search.php?q=${encodeURIComponent(q)}`,
+  nyaa:       q => `https://nyaa.si/?q=${encodeURIComponent(q)}`,
+  archive:    q => `https://archive.org/search?query=${encodeURIComponent(q)}`,
+  gutenberg:  q => `https://www.gutenberg.org/ebooks/search/?query=${encodeURIComponent(q)}`
+};
+
+function runSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  const url = searchUrls[activeEngine]?.(q);
+  if (url) window.open(url, '_blank');
+}
+function clearSearch() { document.getElementById('searchInput').value = ''; }
+document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') runSearch(); });
+
+// ADULT EXPAND
+function toggleAdult(e) {
+  if (e.target.classList.contains('chip') || e.target.classList.contains('expand-toggle')) return;
+  const expand = document.getElementById('adultExpand');
+  const toggle = document.getElementById('adultToggleText');
+  const arrow  = document.getElementById('adultArrow');
+  const open = expand.classList.toggle('open');
+  toggle.textContent = open ? '▲ COLLAPSE PORTAL' : '▼ EXPAND PORTAL';
+  arrow.textContent  = open ? '▼' : '►';
+}
+document.getElementById('adultToggleText').addEventListener('click', function(e) {
+  e.stopPropagation();
+  const expand = document.getElementById('adultExpand');
+  const open = expand.classList.toggle('open');
+  this.textContent = open ? '▲ COLLAPSE PORTAL' : '▼ EXPAND PORTAL';
+  document.getElementById('adultArrow').textContent = open ? '▼' : '►';
+});
+
+// ADULT SEARCH
+function searchAdult(term) {
+  window.open(`https://www.pornhub.com/video/search?search=${encodeURIComponent(term)}`, '_blank');
+}
+function openAdultSite(url) { window.open(url, '_blank'); }
+
+// INFO MODAL
+function showInfo() {
+  document.getElementById('infoModal').classList.add('active');
+}
+function closeInfo() {
+  document.getElementById('infoModal').classList.remove('active');
+}
+
+// IP INFO
+async function showIPInfo(e) {
+  if (e) e.preventDefault();
+  try {
+    const res = await fetch('/api/ip');
+    const data = await res.json();
+    alert(`LOCAL IP: ${data.local}\nEXTERNAL IP: ${data.external}\nHOST: ${data.host}`);
+  } catch (err) {
+    alert('IP lookup unavailable (requires Flask backend)');
+  }
+}
+</script>
+</body>
+</html>

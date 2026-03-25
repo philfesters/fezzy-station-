@@ -1,0 +1,211 @@
+# FEZZY STATION — GitHub + Render Deployment Guide
+# Grant Fezzy Festers · Bojack Fezzy 999 · Strategy Over Impulse
+
+═══════════════════════════════════════════════════════════════════
+STEP 1: PREPARE YOUR PROJECT FOLDER (TERMUX)
+═══════════════════════════════════════════════════════════════════
+
+1. Create a dedicated folder for your Flask project:
+
+   cd ~
+   mkdir fezzy-station
+   cd fezzy-station
+
+2. Copy all the files I created into this folder:
+   
+   cp /sdcard/Download/app.py ~/fezzy-station/
+   cp /sdcard/Download/requirements.txt ~/fezzy-station/
+   cp /sdcard/Download/Procfile ~/fezzy-station/
+   cp /sdcard/Download/.gitignore ~/fezzy-station/
+   cp /sdcard/Download/runtime.txt ~/fezzy-station/
+   cp /sdcard/Download/README.md ~/fezzy-station/
+
+3. **CRITICAL:** Copy THE_MAIN_ONE.html into the same folder:
+   
+   cp ~/path/to/THE_MAIN_ONE.html ~/fezzy-station/
+
+4. Verify all files are present:
+   
+   ls -la ~/fezzy-station
+
+   You should see:
+   - app.py
+   - requirements.txt
+   - Procfile
+   - .gitignore
+   - runtime.txt
+   - README.md
+   - THE_MAIN_ONE.html
+
+═══════════════════════════════════════════════════════════════════
+STEP 2: INSTALL GIT (IF NOT INSTALLED)
+═══════════════════════════════════════════════════════════════════
+
+pkg install git
+
+# Configure your Git identity:
+git config --global user.name "Grant Fezzy Festers"
+git config --global user.email "your_email@example.com"
+
+═══════════════════════════════════════════════════════════════════
+STEP 3: INITIALIZE GIT REPO
+═══════════════════════════════════════════════════════════════════
+
+cd ~/fezzy-station
+
+# Initialize git
+git init
+
+# Add all files
+git add .
+
+# Check what will be committed
+git status
+
+# Commit
+git commit -m "Initial commit - FEZZY STATION Flask App by Grant Fezzy Festers"
+
+═══════════════════════════════════════════════════════════════════
+STEP 4: CREATE GITHUB REPO (VIA BROWSER ON PHONE)
+═══════════════════════════════════════════════════════════════════
+
+1. Open browser → github.com
+2. Login to your account
+3. Click the "+" icon → "New repository"
+4. Repository name: fezzy-station
+5. Description: "FEZZY STATION Flask Web Server - Strategy Over Impulse"
+6. Set to Public (or Private if you prefer)
+7. **DO NOT** initialize with README (we already have one)
+8. Click "Create repository"
+
+GitHub will show you commands. IGNORE THEM. Use these instead:
+
+═══════════════════════════════════════════════════════════════════
+STEP 5: CONNECT LOCAL REPO TO GITHUB
+═══════════════════════════════════════════════════════════════════
+
+# Replace YOUR_USERNAME with your actual GitHub username
+git remote add origin https://github.com/YOUR_USERNAME/fezzy-station.git
+
+# Rename branch to main
+git branch -M main
+
+# Push to GitHub (you'll be prompted for username + personal access token)
+git push -u origin main
+
+**IMPORTANT:** GitHub no longer accepts passwords. You need a Personal Access Token:
+1. GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate new token → Select "repo" scope → Generate
+3. Copy the token (you can't see it again!)
+4. Use this token as your password when pushing
+
+═══════════════════════════════════════════════════════════════════
+STEP 6: DEPLOY TO RENDER (VIA BROWSER)
+═══════════════════════════════════════════════════════════════════
+
+1. Go to render.com
+2. Sign up / Login (use GitHub account for easy connection)
+3. Click "New +" → "Web Service"
+4. Click "Connect account" → Connect your GitHub
+5. Find and select your "fezzy-station" repository
+6. Configure the web service:
+
+   ┌─────────────────────────────────────────────────────┐
+   │ Name:              fezzy-station                    │
+   │ Region:            Choose closest to you            │
+   │ Branch:            main                             │
+   │ Root Directory:    (leave blank)                    │
+   │ Environment:       Python 3                         │
+   │ Build Command:     pip install -r requirements.txt │
+   │ Start Command:     (leave blank - uses Procfile)   │
+   │ Plan:              Free (or select paid)            │
+   └─────────────────────────────────────────────────────┘
+
+7. Click "Create Web Service"
+
+Render will:
+- Detect Python from runtime.txt
+- Install packages from requirements.txt
+- Start Gunicorn using Procfile
+- Assign you a URL: https://fezzy-station.onrender.com (or similar)
+
+═══════════════════════════════════════════════════════════════════
+STEP 7: VERIFY DEPLOYMENT
+═══════════════════════════════════════════════════════════════════
+
+Once deployment completes:
+
+1. Visit your Render URL
+2. Test endpoints:
+   - https://your-app.onrender.com/
+   - https://your-app.onrender.com/api/status
+   - https://your-app.onrender.com/api/ip
+   - https://your-app.onrender.com/health
+
+═══════════════════════════════════════════════════════════════════
+STEP 8: MAKING UPDATES (FUTURE CHANGES)
+═══════════════════════════════════════════════════════════════════
+
+When you update your app:
+
+cd ~/fezzy-station
+
+# Make your changes to app.py or THE_MAIN_ONE.html
+
+# Add changes
+git add .
+
+# Commit
+git commit -m "Describe your changes here"
+
+# Push to GitHub
+git push origin main
+
+Render will auto-deploy within seconds!
+
+═══════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+**Issue:** Build fails on Render
+**Fix:** Check Render logs for errors. Common issues:
+- Missing dependencies in requirements.txt
+- THE_MAIN_ONE.html not in repo
+- Python version mismatch
+
+**Issue:** 404 on main page
+**Fix:** Ensure THE_MAIN_ONE.html is in the same directory as app.py
+
+**Issue:** Git push fails
+**Fix:** 
+- Make sure you're using a Personal Access Token, not password
+- Check remote URL: git remote -v
+
+**Issue:** Can't see THE_MAIN_ONE.html content
+**Fix:** Make sure it's committed to git:
+  git add THE_MAIN_ONE.html
+  git commit -m "Add main HTML file"
+  git push
+
+═══════════════════════════════════════════════════════════════════
+BONUS: CUSTOM DOMAIN (OPTIONAL)
+═══════════════════════════════════════════════════════════════════
+
+If you want a custom domain like fezzy.com:
+
+1. Buy a domain (Namecheap, GoDaddy, etc.)
+2. In Render → Your Service → Settings → Custom Domains
+3. Add your domain
+4. Configure DNS records as Render instructs
+5. Wait for SSL certificate to provision
+
+═══════════════════════════════════════════════════════════════════
+END OF DEPLOYMENT GUIDE
+═══════════════════════════════════════════════════════════════════
+
+Built by: Grant Fezzy Festers
+Codename: Bojack Fezzy 999
+Location: Ravensmead, Cape Town, South Africa
+Brand: Strategy Over Impulse
+
+Need help? Check Render docs: docs.render.com

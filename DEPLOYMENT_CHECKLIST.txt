@@ -1,0 +1,262 @@
+═══════════════════════════════════════════════════════════════════
+FEZZY STATION — DEPLOYMENT CHECKLIST
+═══════════════════════════════════════════════════════════════════
+
+Use this checklist to track your deployment progress.
+
+┌─────────────────────────────────────────────────────────────────┐
+│ PRE-DEPLOYMENT                                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+□ Download all 9 files to /sdcard/Download:
+  □ app.py
+  □ THE_MAIN_ONE.html
+  □ requirements.txt
+  □ Procfile
+  □ .gitignore
+  □ runtime.txt
+  □ README.md
+  □ DEPLOYMENT_GUIDE.txt
+  □ HANDOVER.txt
+
+□ Read HANDOVER.txt (understand what works vs doesn't)
+
+□ Read DEPLOYMENT_GUIDE.txt (full step-by-step)
+
+┌─────────────────────────────────────────────────────────────────┐
+│ TERMUX SETUP                                                    │
+└─────────────────────────────────────────────────────────────────┘
+
+□ Install git (if not installed):
+  pkg install git
+
+□ Configure git identity:
+  git config --global user.name "Grant Fezzy Festers"
+  git config --global user.email "philfesters@gmail.com"
+
+□ Create project folder:
+  cd ~ && mkdir fezzy-station && cd fezzy-station
+
+□ Copy all files:
+  cp /sdcard/Download/app.py .
+  cp /sdcard/Download/THE_MAIN_ONE.html .
+  cp /sdcard/Download/requirements.txt .
+  cp /sdcard/Download/Procfile .
+  cp /sdcard/Download/.gitignore .
+  cp /sdcard/Download/runtime.txt .
+  cp /sdcard/Download/README.md .
+
+□ Verify files copied:
+  ls -la
+  (Should see all 7 files)
+
+┌─────────────────────────────────────────────────────────────────┐
+│ LOCAL TESTING (OPTIONAL BUT RECOMMENDED)                        │
+└─────────────────────────────────────────────────────────────────┘
+
+□ Install dependencies:
+  pip install -r requirements.txt --break-system-packages
+
+□ Run locally:
+  python app.py
+
+□ Test in browser:
+  Open http://127.0.0.1:5000
+
+□ Verify:
+  □ Homepage loads
+  □ Search works
+  □ Adult portal expands
+  □ IP button shows alert
+  □ Contact section visible
+
+□ Stop server:
+  Ctrl+C
+
+┌─────────────────────────────────────────────────────────────────┐
+│ GITHUB SETUP                                                    │
+└─────────────────────────────────────────────────────────────────┘
+
+□ Initialize git:
+  git init
+
+□ Add all files:
+  git add .
+
+□ Check status:
+  git status
+  (Should show all files ready to commit)
+
+□ Commit:
+  git commit -m "Initial commit - FEZZY STATION by Grant Fezzy Festers"
+
+□ Create GitHub repo (via browser):
+  □ Go to github.com
+  □ Click "+" → "New repository"
+  □ Name: fezzy-station
+  □ Description: FEZZY STATION - Strategy Over Impulse
+  □ Public (or Private)
+  □ Don't initialize with README
+  □ Click "Create repository"
+
+□ Get Personal Access Token:
+  □ GitHub → Settings → Developer settings
+  □ Personal access tokens → Tokens (classic)
+  □ Generate new token
+  □ Select "repo" scope
+  □ Generate and COPY TOKEN
+
+□ Connect to GitHub:
+  git remote add origin https://github.com/YOUR_USERNAME/fezzy-station.git
+  (Replace YOUR_USERNAME with your actual GitHub username)
+
+□ Rename branch:
+  git branch -M main
+
+□ Push to GitHub:
+  git push -u origin main
+  (Use your GitHub username and the token as password)
+
+□ Verify on GitHub:
+  □ Go to your repo URL
+  □ All files should be visible
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RENDER DEPLOYMENT                                               │
+└─────────────────────────────────────────────────────────────────┘
+
+□ Sign up for Render:
+  □ Go to render.com
+  □ Sign up with GitHub (easiest)
+
+□ Create Web Service:
+  □ Click "New +" → "Web Service"
+  □ Connect GitHub account (if not already)
+  □ Find "fezzy-station" repo
+  □ Click "Connect"
+
+□ Configure settings:
+  □ Name: fezzy-station
+  □ Region: Choose closest to you
+  □ Branch: main
+  □ Root Directory: (leave blank)
+  □ Environment: Python 3
+  □ Build Command: pip install -r requirements.txt
+  □ Start Command: (leave blank - uses Procfile)
+  □ Plan: Free
+
+□ Click "Create Web Service"
+
+□ Wait for deployment:
+  □ Watch build logs
+  □ Should see "Installing dependencies..."
+  □ Should see "Starting Gunicorn..."
+  □ Should see "Live" status
+
+□ Get your URL:
+  Copy the Render URL (e.g., https://fezzy-station.onrender.com)
+
+┌─────────────────────────────────────────────────────────────────┐
+│ POST-DEPLOYMENT TESTING                                         │
+└─────────────────────────────────────────────────────────────────┘
+
+□ Visit your Render URL
+
+□ Test homepage:
+  □ FEZZY STATION title visible
+  □ Glitch effects working
+  □ Pink/purple theme loaded
+
+□ Test search:
+  □ Enter a search term
+  □ Select YouTube
+  □ Click SEARCH
+  □ Opens YouTube search in new tab
+
+□ Test adult portal:
+  □ Click to expand
+  □ Click a performer name
+  □ Opens Pornhub search
+
+□ Test Juice WRLD portal:
+  □ Click the card
+  □ Opens YouTube unreleased search
+
+□ Test contact section:
+  □ Email link works (opens mail client)
+  □ Phone link works (if on mobile)
+  □ Facebook link works
+
+□ Test API endpoints:
+  Visit these URLs in browser:
+  □ https://your-url.onrender.com/api/ip
+  □ https://your-url.onrender.com/api/status
+  □ https://your-url.onrender.com/health
+
+□ Test navigation:
+  □ HOME button scrolls to top
+  □ SEARCH scrolls to search section
+  □ CONTACT scrolls to contact
+  □ INFO opens modal
+  □ IP shows IP info
+
+□ Test mobile:
+  □ Open on phone browser
+  □ Responsive design works
+  □ Touch interactions work
+
+┌─────────────────────────────────────────────────────────────────┐
+│ SHARE & PROMOTE                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+□ Copy your live URL
+
+□ Share on:
+  □ Facebook (Grant Festers profile)
+  □ Twitter/X
+  □ LinkedIn
+  □ WhatsApp status
+  □ Instagram bio link
+
+□ Update GitHub README:
+  □ Add live URL
+  □ Add screenshot if desired
+
+┌─────────────────────────────────────────────────────────────────┐
+│ FUTURE UPDATES                                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+When you want to make changes:
+
+□ Edit files locally:
+  cd ~/fezzy-station
+  nano THE_MAIN_ONE.html (or any file)
+
+□ Commit changes:
+  git add .
+  git commit -m "Describe your changes"
+
+□ Push to GitHub:
+  git push
+
+□ Render auto-deploys:
+  Wait 30 seconds, changes are live!
+
+┌─────────────────────────────────────────────────────────────────┐
+│ COMPLETION                                                      │
+└─────────────────────────────────────────────────────────────────┘
+
+□ All tests passed
+□ URL shared
+□ Deployment successful
+
+🎉 CONGRATULATIONS! FEZZY STATION IS LIVE! 🎉
+
+Your URL: _________________________________
+
+Deployed by: Grant Fezzy Festers
+Codename: Bojack Fezzy 999
+Brand: Strategy Over Impulse
+Location: Ravensmead, Cape Town, South Africa
+
+═══════════════════════════════════════════════════════════════════
